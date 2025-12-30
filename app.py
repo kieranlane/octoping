@@ -61,7 +61,7 @@ def send_webhook(notification):
         re.sub(r'(?<!^)(?=[A-Z])', ' ', type),
         reason.capitalize(),
         title,
-        f" - [🔗]({url})" if url else ""
+        f" [🔗]({url})" if url else ""
     )
     
     payload = {
