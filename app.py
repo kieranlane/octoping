@@ -19,6 +19,12 @@ HEADERS = {
     "User-Agent": "octoping"
 }
 
+def api_to_web_url(api_url):
+    """Convert GitHub API URL to web URL."""
+    if api_url.startswith("https://api.github.com/repos/"):
+        return api_url.replace("https://api.github.com/repos/", "https://github.com/", 1)
+    return api_url
+
 def load_state():
     if not os.path.exists(STATE_FILE):
         logging.info("State file does not exist, starting fresh")
@@ -61,7 +67,7 @@ def send_webhook(notification):
         re.sub(r'(?<!^)(?=[A-Z])', ' ', type),
         reason.capitalize(),
         title,
-        f" [🔗]({url})" if url else ""
+        f" [🔗]({api_to_web_url(url)})" if url else ""
     )
     
     payload = {
