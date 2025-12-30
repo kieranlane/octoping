@@ -54,7 +54,7 @@ def send_webhook(notification):
         "updated_at": notification["updated_at"],
         "repository": notification["repository"]["full_name"],
         "subject": notification["subject"],
-        "url": notification["html_url"],
+        "url": notification.get("html_url", notification["subject"]["url"]),
         "raw": notification,
     }
     requests.post(WEBHOOK_URL, json=payload, timeout=10)
