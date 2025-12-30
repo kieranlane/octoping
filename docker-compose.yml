@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  octoping:
+    image: ghcr.io/kieranlane/octoping:latest
+    environment:
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - WEBHOOK_URL=${WEBHOOK_URL}
+      - POLL_INTERVAL=${POLL_INTERVAL:-60}
+      - STATE_FILE=/data/state.json
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
