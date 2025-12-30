@@ -39,3 +39,20 @@ docker run -d \
   -v ./data:/data \
   octoping
 ```
+
+## Usage with Hookshot
+
+You can setup [Matrix Hookshot](https://github.com/matrix-org/matrix-hookshot) to recieve the webhooks to create a GitHub notification room for you using the below steps:
+
+1. Setup a new Inbound (Generic) Webhook in your desired notification room.
+2. Enable Transformation JavaScript
+3. Enable Respond after function completes
+4. Set the transformation to:
+
+    ```javascript
+    result = {
+      version: "v2",
+      plain: `${data.markdown}`,
+      msgtype: "m.text"
+    }
+    ```
