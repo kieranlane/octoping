@@ -3,6 +3,7 @@ import time
 import json
 import requests
 import logging
+import re
 from datetime import datetime, timezone
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -48,13 +49,29 @@ def fetch_notifications():
 
 def send_webhook(notification):
     logging.info(f"Sending webhook for notification {notification['id']}: {notification['subject']['title']}")
+    
+    # Create markdown summary (single line)
+    repo = notification["repository"]["full_name"]
+    title = notification["subject"]["title"]
+    type = notification["subject"]["type"]
+    reason = notification["reason"]
+    url = notification.get("html_url", notification["subject"]["url"])
+    
+    markdown = "{} {}: {}{}".format(
+        re.sub(r'(?<!^)(?=[A-Z])', ' ', type),
+        reason.capitalize(),
+        title,
+        f" - [🔗]({url})" if url else ""
+    )
+    
     payload = {
         "id": notification["id"],
         "reason": notification["reason"],
         "updated_at": notification["updated_at"],
         "repository": notification["repository"]["full_name"],
         "subject": notification["subject"],
-        "url": notification.get("html_url", notification["subject"]["url"]),
+        "url": url,
+        "markdown": markdown,
         "raw": notification,
     }
     requests.post(WEBHOOK_URL, json=payload, timeout=10)
