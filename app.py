@@ -19,6 +19,27 @@ HEADERS = {
     "User-Agent": "octoping"
 }
 
+def reason_name_to_description(reason):
+    """Convert GitHub notification reason to human-readable description."""
+    reasons = {
+        "approval_requested": "You were requested to review and approve a deployment.",
+        "assign": "You were assigned to the issue.",
+        "author": "You created the thread.",
+        "ci_activity": "A GitHub Actions workflow run that you triggered was completed.",
+        "comment": "You commented on the thread.",
+        "invitation": "You accepted an invitation to contribute to the repository.",
+        "manual": "You subscribed to the thread (via an issue or pull request).",
+        "member_feature_requested": "Organization members have requested to enable a feature such as Copilot.",
+        "mention": "You were specifically @mentioned in the content.",
+        "review_requested": "You, or a team you're a member of, were requested to review a pull request.",
+        "security_advisory_credit": "You were credited for contributing to a security advisory.",
+        "security_alert": "GitHub discovered a security vulnerability in your repository.",
+        "state_change": "You changed the thread state (for example, closing an issue or merging a pull request).",
+        "subscribed": "You're watching the repository.",
+        "team_mention": "You were on a team that was mentioned."
+    }
+    return reasons.get(reason, "You have a notification.")
+
 def api_to_web_url(api_url):
     """Convert GitHub API URL to web URL."""
     if api_url.startswith("https://api.github.com/repos/"):
@@ -63,11 +84,11 @@ def send_webhook(notification):
     reason = notification["reason"]
     url = notification.get("html_url", notification["subject"]["url"])
     
-    markdown = "{} {}: {}{}".format(
+    markdown = "🔔 **{}** Notification: {}\n\n**Title**: {}\n\n{}".format(
         re.sub(r'(?<!^)(?=[A-Z])', ' ', type),
-        reason.capitalize(),
+        reason_name_to_description(reason),
         title,
-        f" [🔗]({api_to_web_url(url)})" if url else ""
+        f"[🔗]({api_to_web_url(url)})" if url else ""
     )
     
     payload = {
